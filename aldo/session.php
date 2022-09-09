@@ -1,20 +1,23 @@
 <?php
 session_start();
-$nama = $_POST['nama'];
+$username = $_POST['username'];
 $password = $_POST['password'];
 
-//koneksi database
-$koneksi = new pdo('mysql:host=localhost;dbname=puskesmas', 'root', '');
-//cari di database, berdasarkan nama dan password
-$query = $koneksi->query("select * from tb_user where nama='$nama' AND password='$password'");
-// cek jika ada data,maka bikin session ke halaman beranda
-
-if ($query->rowCount() > 0) {
-    $_SESSION["nama"] = $_POST['nama'];
-    $_SESSION["password"] = $_POST['password'];
-    header("location:beranda.php");
-    
-} else {
-    //jika tidak maka ke halaman login
-    header("location:form.php");
+$koneksi = new PDO('mysql:host=localhost;dbname=rumah', 'root', '');
+$query = $koneksi->query("select * from tbuser where username='$username' AND password='$password'");
+$data = $query->fetch();
+if($query->rowCount() > 0){
+    if($data['role']=="admin"){
+        $_SESSION['username'] = $username;
+        $_SESSION['role'] = "admin";
+        header("Location:beranda.php");
+    }
+    else if($data['role']=="user"){
+        echo "hai user";
+        $_SESSION['username'] = $username;
+        $_SESSION['role'] = "user";
+        header("Location:user.php");
+    }
+}else{
+    header("Location:form.php");
 }
